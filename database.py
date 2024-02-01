@@ -10,18 +10,23 @@ class Database:
         self._db = self.connect()
         self._cursor = self._db.cursor()
 
-        self.create()
+        self._modeling_table = ModelingTable(self._db)
 
     def connect(self):
         return sqlite3.connect(os.path.join(self._path,
                                             f"{self._name}_database.db"))
 
-    def _row_exists(self, name: str) -> bool:
-        for file in self.read():
-            if file[0] == name:
-                return True
+    def close(self) -> None:
+        self._db.close()
 
-    def create(self) -> None:
+
+class Table:
+    def __init__(self, database) -> None:
+        self._db = database
+        self._cursor = self._db.cursor()
+        self._name = "baseTable"
+
+    def create(self) -> str:
         self._cursor.execute(f"""
                 CREATE TABLE IF NOT EXISTS {self._name}
                 (
@@ -30,23 +35,21 @@ class Database:
                 )
                 """)
 
-    def insert_object(self, data: dict) -> None:
-        object_name = data["skill_and_soft"]
-        if self._row_exists(object_name):
-            self.delete_object(object_name)
+    def _row_exists(self, name: str) -> bool:
+        for file in self.read():
+            if file[0] == name:
+                return True
+
+    def insert_data(self, skill: str, level: int) -> None:
+        if self._row_exists(skill):
+            self.delete_object(skill)
 
         self._cursor.execute(f"""
                 INSERT INTO {self._name}
-                (
-                    ["skill_and_soft"],
-                    ["level"]
-                )
+                (["skill_and_soft"],["level"])
 
-                VALUES
-                (?,?)
-                """, (object_name,
-                      data["level"]
-                      )
+                VALUES(?,?)
+                """, (skill, level)
                 )
 
         self._db.commit()
@@ -64,5 +67,10 @@ class Database:
         self._cursor.execute(sql)
         self._db.commit()
 
-    def close(self) -> None:
-        self._db.close()
+
+class ModelingTable(Table):
+    def __init__(self, database) -> None:
+        super().__init__(database)
+
+        self._name = "modeling"
+        self.create()

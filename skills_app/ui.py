@@ -1,8 +1,8 @@
 import os
 import sys
 import webbrowser
-from skills_app.Qt import QtWidgets, QtGui, QtCore
-from skills_app import envs
+from Qt import QtWidgets, QtGui, QtCore
+import envs
 
 HEADERS = ["Soft / Skill", "Level"]
 
@@ -106,12 +106,6 @@ class MainUI(QtWidgets.QMainWindow):
         self.menu_bar = self.menuBar()
 
         self.about_menu = self.menu_bar.addMenu("About")
-        self.action["help"] = QtWidgets.QAction("Help (?)", self)
-        self.action["help"].triggered.connect(self.on_help_triggered)
-        self.about_menu.addAction(self.action["help"])
-        self.action["about"] = QtWidgets.QAction("About me", self)
-        self.action["about"].triggered.connect(self.on_about_triggered)
-        self.about_menu.addAction(self.action["about"])
 
     def on_help_triggered(self) -> None:
         QtWidgets.QMessageBox.question(

@@ -15,6 +15,10 @@ class Database:
     def connect(self):
         return sqlite3.connect(os.path.join(self._path,
                                             f"{self._name}_database.db"))
+    
+    def read(self):
+        self._cursor.execute(f"SELECT * FROM {self._name}")
+        return self._cursor.fetchall()
 
     def close(self) -> None:
         self._db.close()
@@ -53,10 +57,6 @@ class Table:
                 )
 
         self._db.commit()
-
-    def read(self):
-        self._cursor.execute(f"SELECT * FROM {self._name}")
-        return self._cursor.fetchall()
 
     def find_object(self, name: str):
         self._cursor.execute(f"SELECT * FROM {self._name} WHERE [] = '{name}'")
